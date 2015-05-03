@@ -134,9 +134,11 @@ public class AnaPencere extends javax.swing.JFrame {
             String cevap;
             cevap=doc.select("div.main_body").text();
             if(cevap.contains("sözü bulunamadı")){
+                
                 jTextArea1.setText("Kelime bulunamadı...");
                 jTextArea2.setText("Kelime bulunamadı...");
                 jTextArea3.setText("Kelime bulunamadı...");
+                
             }else{
                 
             String anlam="", birlesik="", deyim="";
