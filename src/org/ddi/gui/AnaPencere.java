@@ -1,14 +1,8 @@
 package org.ddi.gui;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jsoup.Connection;
-import org.jsoup.Connection.Method;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+ 
+import java.util.List;
+import org.ddi.util.Word;
+import org.ddi.util.WordAggregator; 
 
 /**
  *
@@ -16,11 +10,14 @@ import org.jsoup.select.Elements;
  */
 public class AnaPencere extends javax.swing.JFrame {
 
+    private WordAggregator aggregator;
+    
     /**
      * Creates new form AnaPencere
      */
     public AnaPencere() {
         initComponents();
+        aggregator=new WordAggregator("http://www.tdk.org.tr/index.php?option=com_gts&view=gts");
     }
 
     /**
@@ -117,64 +114,20 @@ public class AnaPencere extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        String kelime;
-        kelime=jTextField1.getText();
-        try {
-            Connection.Response res = Jsoup.connect
-            ("http://www.tdk.org.tr/index.php?option=com_gts&view=gts")
-             .data("kelime", kelime ).method(Method.POST).execute();
-                            
-            Document doc = res.parse();
-            
-            String cevap;
-            cevap=doc.select("div.main_body").text();
-            if(cevap.contains("sözü bulunamadı")){
-                
-                jTextArea1.setText("Kelime bulunamadı...");
-                jTextArea2.setText("Kelime bulunamadı...");
-                jTextArea3.setText("Kelime bulunamadı...");
-                
-            }else{
-                
-            String anlam="", birlesik="", deyim="";
-            Elements tanimlar=doc.select("table#hor-minimalist-a");
-            Elements govde=doc.select("table#hor-minimalist-b");
-          
-            for(Element tablo : govde){
-                if(tablo.text().contains("Atasözü, deyim ve birleşik fiiller")){                 
-                    Elements fiiller=tablo.select("td");
-                    if(fiiller.size()>0) deyim=deyim+"-----------------------\n";
-                    for (Element fiil: fiiller) deyim = deyim + fiil.text() + "\n";  
-                }else if(tablo.text().contains("Birleşik Sözler")){
-                    Elements sozler=tablo.select("td");
-                    if(sozler.size()>0) birlesik=birlesik+"------------------------\n";
-                    for (Element soz : sozler) birlesik = birlesik + soz.text() + "\n";
-                }else
-                    System.out.print("Ek tablo çözümleme hatası!\n");
-            }
 
-            for(Element tanim : tanimlar){ 
-                Elements basliklar=tanim.select("td");
-                anlam=anlam+tanim.select("thead").select("tr").text()+"\n";
-                    for (Element basliklar1 : basliklar) {
-                        String baslik;
-                        baslik = basliklar1.text();
-                        if(baslik.contains("\""))
-                            baslik=baslik.substring(0, baslik.indexOf("\""));
-                        anlam=anlam+baslik+"\n";
-                    }
-            }
-                
-            jTextArea1.setText(anlam); 
-            jTextArea2.setText(birlesik);
-            jTextArea3.setText(deyim);
-
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(AnaPencere.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        List<Word> words;
+        words=aggregator.queryWord(jTextField1.getText());
         
+        jTextArea1.setText("");
+        jTextArea2.setText("");
+        jTextArea3.setText("");
+        
+        
+        for(Word w:words){
+            jTextArea1.setText(jTextArea1.getText()+w.getDefinitions()+"------------------\n");
+            jTextArea2.setText(jTextArea2.getText()+w.getCompounds()+"------------------\n");
+            jTextArea3.setText(jTextArea3.getText()+w.getIdioms()+"------------------\n");
+        }
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
