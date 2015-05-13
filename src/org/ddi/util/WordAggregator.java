@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.ddi.util;
 
 import java.io.IOException;
@@ -55,6 +50,7 @@ public class WordAggregator {
                 for(Element def : definitions){
                     Word w=new Word();
                     Elements heads=def.select("td");
+                    w.name=this.Word;
                     w.word=def.select("thead").select("tr").text();
                     for(Element head : heads){
                         String headText;

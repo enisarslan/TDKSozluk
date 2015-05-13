@@ -7,6 +7,7 @@ import java.util.*;
  * @author erhan
  */
 public class Word {
+    public String name;
     public String word;
     public String type;
     public String suffix;
